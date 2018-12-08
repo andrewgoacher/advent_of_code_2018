@@ -1,23 +1,50 @@
-use util::get_lines;
 use std::collections::HashMap;
+use util::get_lines;
 
 pub fn solve() -> u32 {
     let lines = get_lines("./data/day_2.txt");
-    let hashmap = HashMap::new();
-    let checksums = lines   
-                    .into_iter()
-                    .fold(hashmap,
-                    |mut m, l| {
-                        l.chars()
-                            .fold(m,
-                                |mut m2, c| {
-                                    *m2.entry(c).or_insert(0) += 1; m2
-                                });
-                                m
-                    });
-    
-    let twos_count = checksums.iter().filter(|&(k,v)| *v == 2).count() as u32;
-    let threes_count = checksums.iter().filter(|&(k,v)| *v == 3).count() as u32;
+    solve_internal(lines)
+}
 
-    twos_count * threes_count
+fn solve_internal(lines: Vec<String>) -> u32 {
+    let mut twos = 0;
+    let mut threes = 0;
+
+    for line in lines.into_iter() {
+        let hashmap = line.chars().fold(HashMap::new(), |mut acc, c| {
+            *acc.entry(c).or_insert(0) += 1;
+            acc
+        });
+        let tc = hashmap.iter().filter(|&(k, v)| *v == 2).count() as u32;
+        let thc = hashmap.iter().filter(|&(k, v)| *v == 3).count() as u32;
+        if  tc > 0 {
+            twos += 1;
+        }
+
+        if thc > 0 {
+            threes += 1;
+        }
+    }
+
+    twos * threes
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn solve_works() {
+        let strings = vec![
+            String::from("abcdef"),
+            String::from("bababc"),
+            String::from("abbcde"),
+            String::from("abcccd"),
+            String::from("aabcdd"),
+            String::from("abcdee"),
+            String::from("ababab"),
+        ];
+        let result = solve_internal(strings);
+
+        assert_eq!(result, 12);
+    }
 }
