@@ -1,15 +1,15 @@
 mod util;
 
 use std::collections::HashMap;
-use util::get_lines;
+use util::{get_lines,get_file_path};
 
-pub fn solve() -> i32 {
-    let lines = get_lines("./data/day_1.txt");
+pub fn solve(path: &String) -> i32 {
+    let lines = get_lines(path);
     lines.into_iter().map(|x| x.parse::<i32>().unwrap()).sum()
 }
 
-pub fn solve_part2() -> i32 {
-    let lines = get_lines("./data/day_1.txt");
+pub fn solve_part2(path: &String) -> i32 {
+    let lines = get_lines(path);
     internal_solve_proper(&lines)
 }
 
@@ -49,8 +49,10 @@ fn internal_solve( total: i32, lines: &Vec<String>, map: &mut HashMap<i32, i32>)
 }
 
 fn main() {
-    let part1 = solve();
-    let part2 = solve_part2();
+    let file_path = get_file_path().unwrap();
+
+    let part1 = solve(&file_path);
+    let part2 = solve_part2(&file_path);
 
     println!("Part 1: {}", part1);
     println!("Part 2: {}", part2);

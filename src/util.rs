@@ -12,9 +12,10 @@ pub fn get_file_path() -> Option<String> {
                     .arg(Arg::with_name("data")
                         .short("d")
                         .long("data")
-                        .value_name("DATA")).get_matches();
+                        .value_name("DATA")
+                        .takes_value(true)).get_matches();
     
-    match matches.value_of("DATA") {
+    match matches.value_of("data") {
         None => None,
         Some(x) => Some(String::from(x))
     }
