@@ -1,14 +1,16 @@
 mod util;
 
 use std::collections::HashMap;
-use util::{get_lines,get_file_path};
+use util::{get_file_path, get_lines};
 
-pub fn solve(path: &String) -> i32 {
-    let lines = get_lines(path);
-    lines.into_iter().map(|x| x.parse::<i32>().unwrap()).sum()
+pub fn part_1(path: &String) -> i32 {
+    get_lines(path)
+        .into_iter()
+        .map(|x| x.parse::<i32>().unwrap())
+        .sum()
 }
 
-pub fn solve_part2(path: &String) -> i32 {
+pub fn part_2(path: &String) -> i32 {
     let lines = get_lines(path);
     internal_solve_proper(&lines)
 }
@@ -19,20 +21,24 @@ fn internal_solve_proper(lines: &Vec<String>) -> i32 {
     let mut total = 0;
     map.insert(0, 1);
     while result == None {
-        let (r,s) = internal_solve(total, &lines, &mut map);
+        let (r, s) = internal_solve(total, &lines, &mut map);
         result = r;
         total = s;
     }
     result.unwrap()
 }
 
-fn internal_solve( total: i32, lines: &Vec<String>, map: &mut HashMap<i32, i32>) -> (Option<i32>, i32) {
+fn internal_solve(
+    total: i32,
+    lines: &Vec<String>,
+    map: &mut HashMap<i32, i32>,
+) -> (Option<i32>, i32) {
     let mut sum = total.clone();
     for line in lines.into_iter() {
         let i = line.parse::<i32>().unwrap();
-        sum+= i;
+        sum += i;
         *map.entry(sum).or_insert(0) += 1;
-        let v= map[&sum];
+        let v = map[&sum];
         if v == 2 {
             return (Some(sum), sum);
         }
@@ -51,8 +57,8 @@ fn internal_solve( total: i32, lines: &Vec<String>, map: &mut HashMap<i32, i32>)
 fn main() {
     let file_path = get_file_path().unwrap();
 
-    let part1 = solve(&file_path);
-    let part2 = solve_part2(&file_path);
+    let part1 = part_1(&file_path);
+    let part2 = part_2(&file_path);
 
     println!("Part 1: {}", part1);
     println!("Part 2: {}", part2);
