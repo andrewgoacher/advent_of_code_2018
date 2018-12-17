@@ -1,3 +1,5 @@
+mod util;
+
 use std::collections::HashMap;
 use util::get_lines;
 
@@ -44,6 +46,14 @@ fn internal_solve( total: i32, lines: &Vec<String>, map: &mut HashMap<i32, i32>)
             (Some(k.clone()), sum)
         }
     }
+}
+
+fn main() {
+    let part1 = solve();
+    let part2 = solve_part2();
+
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
 }
 
 #[cfg(test)]

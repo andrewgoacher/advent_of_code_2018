@@ -1,3 +1,5 @@
+mod util;
+
 use std::collections::HashMap;
 use util::get_lines;
 
@@ -27,6 +29,11 @@ fn solve_internal(lines: Vec<String>) -> u32 {
     }
 
     twos * threes
+}
+
+fn main() {
+    let part_1 = solve();
+    println!("Part 1: {}", part_1);
 }
 
 #[cfg(test)]
