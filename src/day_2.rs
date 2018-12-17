@@ -1,10 +1,10 @@
 mod util;
 
 use std::collections::HashMap;
-use util::get_lines;
+use util::{get_lines,get_file_path};
 
-pub fn solve() -> u32 {
-    let lines = get_lines("./data/day_2.txt");
+pub fn solve(path: &String) -> u32 {
+    let lines = get_lines(path);
     solve_internal(lines)
 }
 
@@ -32,7 +32,9 @@ fn solve_internal(lines: Vec<String>) -> u32 {
 }
 
 fn main() {
-    let part_1 = solve();
+    let file_path = get_file_path().unwrap();
+
+    let part_1 = solve(&file_path);
     println!("Part 1: {}", part_1);
 }
 
