@@ -14,3 +14,4 @@ path="src/day_2.rs"
 
 
 [dependencies]
+clap = "2"
