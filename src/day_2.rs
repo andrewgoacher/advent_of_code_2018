@@ -52,7 +52,7 @@ fn solve_part_2_internal(lines: &Vec<String>) -> String {
         .filter(|&((_,_,hd),_)| *hd < 2 && *hd > 0)
         .nth(0).unwrap();
 
-        let mut char_map : HashMap<char, u32> = 
+        let char_map : HashMap<char, u32> = 
             ax.chars().into_iter()
             .zip(bx.chars().into_iter())
             .fold(HashMap::new(), |mut acc, (ac,bc)| {
