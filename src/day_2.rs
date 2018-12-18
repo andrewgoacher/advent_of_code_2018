@@ -1,7 +1,7 @@
 mod util;
 
 use std::collections::HashMap;
-use util::{get_file_path, get_lines, hamming_distance};
+use util::{get_lines, get_file_path, hamming_distance};
 
 pub fn part_1(path: &String) -> u32 {
     let lines = get_lines(path);

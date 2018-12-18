@@ -1,7 +1,7 @@
 mod util;
 
 use std::collections::HashMap;
-use util::{get_file_path, get_lines};
+use util::{get_lines, get_file_path};
 
 pub fn part_1(path: &String) -> i32 {
     get_lines(path)
