@@ -17,8 +17,8 @@ fn solve_internal(lines: Vec<String>) -> u32 {
             *acc.entry(c).or_insert(0) += 1;
             acc
         });
-        let tc = hashmap.iter().filter(|&(k, v)| *v == 2).count() as u32;
-        let thc = hashmap.iter().filter(|&(k, v)| *v == 3).count() as u32;
+        let tc = hashmap.iter().filter(|&(_, v)| *v == 2).count() as u32;
+        let thc = hashmap.iter().filter(|&(_, v)| *v == 3).count() as u32;
         if  tc > 0 {
             twos += 1;
         }

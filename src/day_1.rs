@@ -44,11 +44,11 @@ fn internal_solve(
         }
     }
 
-    let mut res = map.iter().filter(|&(k, v)| *v == 2);
+    let mut res = map.iter().filter(|&(_, v)| *v == 2);
     match res.nth(0) {
         None => (None, sum),
         Some(x) => {
-            let (k, v) = x;
+            let (k, _) = x;
             (Some(k.clone()), sum)
         }
     }
