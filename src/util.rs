@@ -33,3 +33,18 @@ pub fn get_lines(file: &str) -> Vec<String> {
 
     lines
 }
+
+pub fn hamming_distance(a: &String, b: &String) -> usize {
+    if a.len() != b.len() {
+        panic!("strings must be same length");
+    }
+
+    a
+    .chars()
+    .into_iter()
+    .enumerate()
+    .zip(b.chars().into_iter().enumerate())
+    .map(|(ac, bc)| (ac,bc))
+    .filter(|(ac,bc)| *ac != *bc)
+    .count()
+}

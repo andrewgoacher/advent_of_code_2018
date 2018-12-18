@@ -1,7 +1,7 @@
 mod util;
 
 use std::collections::HashMap;
-use util::{get_lines,get_file_path};
+use util::{get_file_path, get_lines, hamming_distance};
 
 pub fn part_1(path: &String) -> u32 {
     let lines = get_lines(path);
@@ -11,7 +11,7 @@ pub fn part_1(path: &String) -> u32 {
 fn part_2(path: &String) -> String {
     let lines = get_lines(path);
 
-    solve_part_2_internal(lines)
+    solve_part_2_internal(&lines)
 }
 
 fn solve_internal(lines: Vec<String>) -> u32 {
@@ -25,7 +25,7 @@ fn solve_internal(lines: Vec<String>) -> u32 {
         });
         let tc = hashmap.iter().filter(|&(_, v)| *v == 2).count() as u32;
         let thc = hashmap.iter().filter(|&(_, v)| *v == 3).count() as u32;
-        if  tc > 0 {
+        if tc > 0 {
             twos += 1;
         }
 
@@ -37,33 +37,33 @@ fn solve_internal(lines: Vec<String>) -> u32 {
     twos * threes
 }
 
-fn solve_part_2_internal(lines: Vec<String>) -> String {
-    let ordered_lines : Vec<String> = lines.into_iter().map(|l| {
-       let mut chars : Vec<char> = l.chars().collect();
-       chars.sort_by(|a,b| a.cmp(b)) ;
-       let len = chars.len()-1;
-       let c : String = chars
-            .into_iter()
-            .enumerate()
-            .filter(|&(i,_)| i < len )
-            .map(|(_,ch)| ch)
-            .collect();
-       c
-    }).collect();
+fn solve_part_2_internal(lines: &Vec<String>) -> String {
+    let map = lines
+        .into_iter()
+        .fold(HashMap::new(), |mut acc, la| {
+            for lb in lines.into_iter() {
+                *acc.entry((la, lb, hamming_distance(&la, &lb))).or_insert(0) += 1;
+            }
+            acc
+        });
 
-    // todo: learn rust properly
-    println!("{:?}", ordered_lines);
+    let ((ax,bx,_),_) = 
+        map.iter()
+        .filter(|&((_,_,hd),_)| *hd < 2 && *hd > 0)
+        .nth(0).unwrap();
 
-    let res : Vec<String> = ordered_lines.into_iter().fold(HashMap::new(), |mut acc, line| {
-        *acc.entry(line).or_insert(1) += 1;
-        acc
-    })
-    .iter()
-    .filter(|&(_,v)| *v > 1)
-    .map(|(k,_)| k.clone())
-    .collect();
+        let mut char_map : HashMap<char, u32> = 
+            ax.chars().into_iter()
+            .zip(bx.chars().into_iter())
+            .fold(HashMap::new(), |mut acc, (ac,bc)| {
+            *acc.entry(ac).or_insert(0) += 1;
+            *acc.entry(bc).or_insert(0) += 1;
+            acc
+        });
 
-    res[0].clone()
+        let unloved_chars : Vec<char> = char_map.into_iter().filter(|&(_,v)| v == 1).map(|(k,_)| k).collect();
+        let s : String = ax.chars().into_iter().filter(|c| unloved_chars.contains(&c) == false).collect();
+        s
 }
 
 fn main() {
@@ -98,12 +98,16 @@ mod tests {
     #[test]
     fn part_2_solve() {
         let strings = vec![
-            String::from("abcdef"),
-            String::from("abcdeg"),
-            String::from("avbsde")
+            String::from("abcde"),
+            String::from("fghij"),
+            String::from("klmno"),
+            String::from("pqrst"),
+            String::from("fguij"),
+            String::from("axcye"),
+            String::from("wvxyz"),
         ];
 
-        let result = solve_part_2_internal(strings);
-        assert_eq!(result, String::from("abcde"));
+        let result = solve_part_2_internal(&strings);
+        assert_eq!(result, String::from("fgij"));
     }
 }
