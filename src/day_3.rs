@@ -12,10 +12,21 @@ struct GridCell {
     h: u32,
 }
 
-pub fn part_1(lines: &Vec<String>) -> u32 {
+impl GridCell {
+    fn new(x:u32, y:u32, w:u32, h:u32) -> GridCell {
+        GridCell {
+            x: x,
+            y: y,
+            w: w,
+            h: h
+        }
+    }
+}
+
+fn get_cells(lines: &Vec<String>) -> Vec<GridCell> {
     // #1 @ 179,662: 16x27
     let re = Regex::new(r"#\d+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
-    let count: u32 = lines
+    lines
         .into_iter()
         .map(|l| {
             let caps = re.captures(l).unwrap();
@@ -32,13 +43,13 @@ pub fn part_1(lines: &Vec<String>) -> u32 {
                 .get(4)
                 .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
 
-            GridCell {
-                x: x,
-                y: y,
-                w: w,
-                h: h,
-            }
-        }).into_iter()
+            GridCell::new(x,y,w,h)
+        }).collect()
+}
+
+fn part_1(lines: &Vec<String>) -> u32 {
+    let count: u32= get_cells(&lines)
+    .into_iter()
         .fold(Vec::new(), |mut col, cell| {
             for i in cell.x..(cell.x + cell.w) {
                 for j in cell.y..(cell.y + cell.h) {
