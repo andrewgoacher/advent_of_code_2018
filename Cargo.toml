@@ -19,3 +19,4 @@ path="src/day_3.rs"
 
 [dependencies]
 clap = "2"
+regex = "1.1.0"
