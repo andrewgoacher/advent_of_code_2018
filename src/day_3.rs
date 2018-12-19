@@ -74,8 +74,8 @@ fn part_1(lines: &Vec<String>) -> u32 {
         count
 }
 
-fn part_2(lines: &Vec<String>) -> String {
-    String::from("Unsolved")
+fn part_2(lines: &Vec<String>) -> u32 {
+    panic!("not implemented");
 }
 
 fn main() {
@@ -102,5 +102,17 @@ mod tests {
 
         let result = part_1(&inputs);
         assert_eq!(4, result)
+    }
+
+        #[test]
+    fn part_2_solve_with_inputs_have_correct_unconflicting_claim() {
+        let inputs = vec![
+            String::from("#1 @ 1,3: 4x4"),
+            String::from("#2 @ 3,1: 4x4"),
+            String::from("#3 @ 5,5: 2x2"),
+        ];
+
+        let result = part_2(&inputs);
+        assert_eq!(3, result)
     }
 }
