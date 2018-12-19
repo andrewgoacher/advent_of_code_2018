@@ -10,40 +10,46 @@ struct GridCell {
     y: u32,
     w: u32,
     h: u32,
+    claim_id: u32
 }
 
 impl GridCell {
-    fn new(x:u32, y:u32, w:u32, h:u32) -> GridCell {
+    fn new(x:u32, y:u32, w:u32, h:u32, id: u32) -> GridCell {
         GridCell {
             x: x,
             y: y,
             w: w,
-            h: h
+            h: h,
+            claim_id: id
         }
     }
 }
 
 fn get_cells(lines: &Vec<String>) -> Vec<GridCell> {
     // #1 @ 179,662: 16x27
-    let re = Regex::new(r"#\d+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
+    let re = Regex::new(r"#(\d)+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     lines
         .into_iter()
         .map(|l| {
             let caps = re.captures(l).unwrap();
             let x = caps
-                .get(1)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let y = caps
                 .get(2)
                 .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let w = caps
+            let y = caps
                 .get(3)
                 .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let h = caps
+            let w = caps
                 .get(4)
                 .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+            let h = caps
+                .get(5)
+                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
 
-            GridCell::new(x,y,w,h)
+            let claim_id = caps
+                .get(1)
+                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+
+            GridCell::new(x,y,w,h, claim_id)
         }).collect()
 }
 
