@@ -26,14 +26,23 @@ mod tests {
 
     fn get_test_data() -> Vec<String> {
         vec![
-            String::from("Date   ID   Minute"),
-            String::from("000000000011111111112222222222333333333344444444445555555555"),
-            String::from("012345678901234567890123456789012345678901234567890123456789"),
-            String::from("11-01  #10  .....####################.....#########################....."),
-            String::from("11-02  #99  ........................................##########.........."),
-            String::from("11-03  #10  ........................#####..............................."),
-            String::from("11-04  #99  ....................................##########.............."),
-            String::from("11-05  #99  .............................................##########.....")
+            String::from("[1518-11-01 00:00] Guard #10 begins shift"),
+            String::from("[1518-11-01 00:05] falls asleep"),
+            String::from("[1518-11-01 00:25] wakes up"),
+            String::from("[1518-11-01 00:30] falls asleep"),
+            String::from("[1518-11-01 00:55] wakes up"),
+            String::from("[1518-11-01 23:58] Guard #99 begins shift"),
+            String::from("[1518-11-02 00:40] falls asleep"),
+            String::from("[1518-11-02 00:50] wakes up"),
+            String::from("[1518-11-03 00:05] Guard #10 begins shift"),
+            String::from("[1518-11-03 00:24] falls asleep"),
+            String::from("[1518-11-03 00:29] wakes up"),
+            String::from("[1518-11-04 00:02] Guard #99 begins shift"),
+            String::from("[1518-11-04 00:36] falls asleep"),
+            String::from("[1518-11-04 00:46] wakes up"),
+            String::from("[1518-11-05 00:03] Guard #99 begins shift"),
+            String::from("[1518-11-05 00:45] falls asleep"),
+            String::from("[1518-11-05 00:55] wakes up"),
         ]
     }
 
