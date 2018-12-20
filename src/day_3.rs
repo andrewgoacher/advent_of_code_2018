@@ -1,81 +1,135 @@
 mod util;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use util::{get_file_path, get_lines};
 extern crate regex;
 use regex::Regex;
+use std::fmt;
 
-struct GridCell {
+struct GridPoint {
     x: u32,
     y: u32,
-    w: u32,
-    h: u32,
-    claim_id: u32
+    claim_id: u32,
 }
 
-impl GridCell {
-    fn new(x:u32, y:u32, w:u32, h:u32, id: u32) -> GridCell {
-        GridCell {
+impl GridPoint {
+    fn new(x: u32, y: u32, id: u32) -> GridPoint {
+        GridPoint {
             x: x,
             y: y,
-            w: w,
-            h: h,
-            claim_id: id
+            claim_id: id,
         }
     }
 }
 
-fn get_cells(lines: &Vec<String>) -> Vec<GridCell> {
+fn get_capture(re: &Regex, line: &String) -> (u32, u32, u32, u32, u32) {
+    let caps = re.captures(&line).unwrap();
+    let x = caps
+        .get(2)
+        .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+    let y = caps
+        .get(3)
+        .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+    let w = caps
+        .get(4)
+        .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+    let h = caps
+        .get(5)
+        .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+    let claim_id = caps
+        .get(1)
+        .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+
+    (x, y, w, h, claim_id)
+}
+
+fn get_cells(lines: &Vec<String>) -> Vec<GridPoint> {
     // #1 @ 179,662: 16x27
     let re = Regex::new(r"#(\d)+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
-    lines
-        .into_iter()
-        .map(|l| {
-            let caps = re.captures(l).unwrap();
-            let x = caps
-                .get(2)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let y = caps
-                .get(3)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let w = caps
-                .get(4)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-            let h = caps
-                .get(5)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
+    lines.into_iter().fold(Vec::new(), |mut acc, l| {
+        let (x, y, w, h, id) = get_capture(&re, &l);
 
-            let claim_id = caps
-                .get(1)
-                .map_or(0, |m| m.as_str().parse::<u32>().unwrap());
-
-            GridCell::new(x,y,w,h, claim_id)
-        }).collect()
+        for i in x..(x + w) {
+            for j in y..(y + h) {
+                acc.push(GridPoint::new(i, j, id));
+            }
+        }
+        acc
+    })
 }
 
 fn part_1(lines: &Vec<String>) -> u32 {
-    let count: u32= get_cells(&lines)
-    .into_iter()
-        .fold(Vec::new(), |mut col, cell| {
-            for i in cell.x..(cell.x + cell.w) {
-                for j in cell.y..(cell.y + cell.h) {
-                    col.push((i, j))
-                }
-            }
-            col
-        }).into_iter()
-        .fold(HashMap::new(), |mut acc, (x, y)| {
-            *acc.entry((x, y)).or_insert(0) += 1;
+    let count: u32 = get_cells(&lines)
+        .into_iter()
+        .fold(HashMap::new(), |mut acc, cell| {
+            *acc.entry((cell.x, cell.y)).or_insert(0) += 1;
             acc
         }).into_iter()
         .filter(|(_, v)| *v > 1)
         .count() as u32;
 
-        count
+    count
+}
+
+struct CellItem {
+    count: u32,
+    claims: Vec<u32>,
+}
+
+impl fmt::Debug for CellItem {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "CellItem: {{count: {}, claims: {:?}}}",
+            self.count, self.claims
+        )
+    }
 }
 
 fn part_2(lines: &Vec<String>) -> u32 {
-    panic!("not implemented");
+    let map = get_cells(&lines).into_iter().fold(
+        HashMap::<(u32, u32), CellItem>::new(),
+        |mut acc, cell| {
+            {
+                let item = acc.entry((cell.x, cell.y)).or_insert(CellItem {
+                    count: 0,
+                    claims: Vec::new(),
+                });
+                item.count += 1;
+                item.claims.push(cell.claim_id);
+            }
+            acc
+        },
+    );
+
+    println!("{:?}", map);
+
+    let unwanted_claims: HashSet<u32> =
+        map.iter()
+            .filter(|(_, item)| item.count > 1)
+            .fold(HashSet::new(), |mut set, (_, item)| {
+                for claim in item.claims.iter() {
+                    set.insert(claim.clone());
+                }
+                set
+            });
+    
+    println!("{:?}", unwanted_claims);
+
+    let claim = map
+        .iter()
+        .fold(HashSet::new(), |mut acc, (_, item)| {
+            for claim in item.claims.iter() {
+                acc.insert(claim);
+            }
+            acc
+        })
+        .into_iter()
+        .filter(|claim| unwanted_claims.contains(claim) == false)
+        .nth(0)
+        .unwrap();
+
+    claim.clone()
 }
 
 fn main() {
@@ -104,7 +158,7 @@ mod tests {
         assert_eq!(4, result)
     }
 
-        #[test]
+    #[test]
     fn part_2_solve_with_inputs_have_correct_unconflicting_claim() {
         let inputs = vec![
             String::from("#1 @ 1,3: 4x4"),
