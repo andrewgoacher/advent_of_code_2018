@@ -45,7 +45,7 @@ fn get_capture(re: &Regex, line: &String) -> (u32, u32, u32, u32, u32) {
 
 fn get_cells(lines: &Vec<String>) -> Vec<GridPoint> {
     // #1 @ 179,662: 16x27
-    let re = Regex::new(r"#(\d)+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
+    let re = Regex::new(r"#(\d+)+ @ (\d+),(\d+): (\d+)x(\d+)").unwrap();
     lines.into_iter().fold(Vec::new(), |mut acc, l| {
         let (x, y, w, h, id) = get_capture(&re, &l);
 
@@ -73,7 +73,16 @@ fn part_1(lines: &Vec<String>) -> u32 {
 
 struct CellItem {
     count: u32,
-    claims: Vec<u32>,
+    claims: HashSet<u32>,
+}
+
+impl CellItem {
+    fn new() -> CellItem {
+        CellItem {
+            count: 0,
+            claims: HashSet::new()
+        }
+    }
 }
 
 impl fmt::Debug for CellItem {
@@ -91,18 +100,14 @@ fn part_2(lines: &Vec<String>) -> u32 {
         HashMap::<(u32, u32), CellItem>::new(),
         |mut acc, cell| {
             {
-                let item = acc.entry((cell.x, cell.y)).or_insert(CellItem {
-                    count: 0,
-                    claims: Vec::new(),
-                });
-                item.count += 1;
-                item.claims.push(cell.claim_id);
+                let item = acc.entry((cell.x, cell.y)).or_insert(CellItem::new());
+                if item.claims.insert(cell.claim_id) {
+                    item.count += 1;
+                }
             }
             acc
         },
     );
-
-    println!("{:?}", map);
 
     let unwanted_claims: HashSet<u32> =
         map.iter()
@@ -113,10 +118,8 @@ fn part_2(lines: &Vec<String>) -> u32 {
                 }
                 set
             });
-    
-    println!("{:?}", unwanted_claims);
 
-    let claim = map
+    let all_claim = map
         .iter()
         .fold(HashSet::new(), |mut acc, (_, item)| {
             for claim in item.claims.iter() {
@@ -125,7 +128,9 @@ fn part_2(lines: &Vec<String>) -> u32 {
             acc
         })
         .into_iter()
-        .filter(|claim| unwanted_claims.contains(claim) == false)
+        .filter(|claim| unwanted_claims.contains(claim) == false);
+
+        let claim = all_claim.into_iter()
         .nth(0)
         .unwrap();
 
